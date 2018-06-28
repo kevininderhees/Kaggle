@@ -6,7 +6,6 @@
 
 #### Libraries ####
 library(data.table)
-library(dplyr)
 
 
 # fit_crossfolds: return predictions for the given model when fit on crossfolds

@@ -6,7 +6,6 @@
 
 #### Libraries ####
 library(data.table)
-library(dplyr)
 library(rprojroot)
 
 base_dir <- find_root(criteria$is_git_root)
