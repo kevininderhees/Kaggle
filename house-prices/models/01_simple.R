@@ -1,6 +1,7 @@
 # Project: Kaggle housing prices
 # Copyright: Kevin Inderhees 2018
 # Description: create a simple model to test reading in and scoring the data
+# R version: R version 3.5.0 (2018-04-23)
 
 
 #### Libraries ####
@@ -16,7 +17,8 @@ test_csv  <- file.path(base_dir, "house-prices", "data", "test.csv")
 
 
 #### Outputs ####
-submission_csv <- file.path(base_dir, "house-prices", "models", "output", "01_submission.csv")
+submission_csv <- file.path(base_dir, "house-prices", "models", "output"
+                            , "01_submission.csv")
 
 
 #### Code ####
@@ -38,7 +40,7 @@ int_mdl <- lm(data = train, formula = "logSalePrice ~ 1")
 # Score the model
 score_model <- function(mdl) {
   preds <- mdl$fitted.values
-  
+
   # Scoring metric is RMSE of the log of the sales prices
   RMSE <- sqrt(mean((preds - train$logSalePrice)^2))
   return(RMSE)
