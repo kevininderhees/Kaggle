@@ -18,9 +18,13 @@ library(doParallel)
 #            specifies which fold each record is in
 #   folds: integer specifying number of folds to use.  Ignored if foldvar is not
 #          NULL
+#   parallel: logical indicating whether we should run in parallel.  Set to
+#             FALSE if fit_mdl is already parallelized
+#   cores: number of cores to use when running in parallel
 #   seed: seed to be passed to set.seed prior to generating folds
 #   ...: parameters to be passed on to fit_mdl()
 fit_crossfolds <- function(indata, fit_mdl, foldvar = NULL, folds = 10
+                           , parallel = TRUE, cores = detectCores() - 1
                            , seed = 1234, ...) {
   if (is.null(foldvar)) {
     foldvar <- "fold"
@@ -28,8 +32,12 @@ fit_crossfolds <- function(indata, fit_mdl, foldvar = NULL, folds = 10
     indata[, fold := ceiling(runif(n = .N) * folds)]
   }
 
-  cl <- makeCluster(4)
-  registerDoParallel(cl)
+  if (parallel) {
+    cl <- makeCluster(cores)
+    registerDoParallel(cl)
+  } else {
+    registerDoSEQ()
+  }
 
   fold_values <- unique(indata[[foldvar]])
   crossfold_preds <- foreach(fold = fold_values
@@ -41,7 +49,9 @@ fit_crossfolds <- function(indata, fit_mdl, foldvar = NULL, folds = 10
     test[, .(Id, preds)]
   }
 
-  stopCluster(cl)
+  if (parallel) {
+    stopCluster(cl)
+  }
 
   crossfold_preds <- rbindlist(crossfold_preds)
   return(crossfold_preds[order(Id), preds])
