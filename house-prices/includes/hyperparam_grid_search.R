@@ -28,17 +28,21 @@ source(file.path(base_dir, "house-prices", "includes", "crossfold.R"))
 #            specifies which fold each record is in
 #   folds: integer specifying number of folds to use.  Ignored if foldvar is not
 #          NULL
+#   parallel: logical indicating whether we should run in parallel.  Set to
+#             FALSE if fit_mdl is already parallelized
 #   seed: seed to be passed to set.seed prior to generating folds
 #   hyper: list of vectors of hyperparameters to be passed on to fit_mdl()
 hyperparam_grid_search <- function(indata, fit_mdl, score_model, foldvar = NULL
-                                   , folds = 10, seed = 1234, hyper) {
+                                   , folds = 10, parallel = TRUE, seed = 1234
+                                   , hyper) {
   hyper_comb <- as.data.table(do.call(expand.grid, hyper))
   hyper_comb[, model_score := vapply(
     1:dim(hyper_comb)[1]
     , function(i) {
       message(paste("Testing hyperparameter combination", i
                     , "out of", dim(hyper_comb)[1]))
-      crossfold_preds <- fit_crossfolds(indata, fit_mdl, foldvar, folds, seed
+      crossfold_preds <- fit_crossfolds(indata, fit_mdl, foldvar, folds
+                                        , seed = seed, parallel = parallel
                                         , hyper_comb[i, ])
       score_model(crossfold_preds)
     }
