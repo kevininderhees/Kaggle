@@ -43,7 +43,7 @@ hyperparam_grid_search <- function(indata, fit_mdl, score_model, foldvar = NULL
                     , "out of", dim(hyper_comb)[1]))
       crossfold_preds <- fit_crossfolds(indata, fit_mdl, foldvar, folds
                                         , seed = seed, parallel = parallel
-                                        , hyper_comb[i, ])
+                                        , hyper = hyper_comb[i, ])
       score_model(crossfold_preds)
     }
     , numeric(1)
