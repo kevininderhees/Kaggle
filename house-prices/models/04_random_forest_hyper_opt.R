@@ -126,7 +126,7 @@ fit_mdl <- function(train, test, hyper = NULL) {
 
   # Explicitly state randomForest:: so that foreach picks up on the dependency
   # when we run crossfolds in parallel
-  ncores <- 4
+  ncores <- parallel::detectCores() - 1
   cl <- parallel::makeCluster(ncores)
   doParallel::registerDoParallel(cl)
 
@@ -160,7 +160,7 @@ fit_mdl <- function(train, test, hyper = NULL) {
 }
 
 system.time(
-  crossfold_preds <- fit_crossfolds(train, fit_mdl)
+  crossfold_preds <- fit_crossfolds(train, fit_mdl, parallel = FALSE)
 )
 
 # Helper function to score the model
@@ -170,7 +170,7 @@ score_model <- function(preds) {
   return(RMSE)
 }
 score_model(crossfold_preds)
-# 0.1362 - slightly different from 03, since with a parallel fit_mdl our RNG is
+# 0.1363 - slightly different from 03, since with a parallel fit_mdl our RNG is
 # different
 
 # Try different hyperparameters
@@ -179,6 +179,7 @@ system.time(
     train
     , fit_mdl
     , score_model
+    , parallel = FALSE
     , hyper = list(mtry = c(10, 26, 50)
                    , nodesize = c(5, 10, 20)
                    , ntree = c(250, 500, 1000)))
