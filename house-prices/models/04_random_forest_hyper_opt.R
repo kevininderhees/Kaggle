@@ -180,8 +180,8 @@ system.time(
     , fit_mdl
     , score_model
     , parallel = FALSE
-    , hyper = list(mtry = c(10, 26, 50)
-                   , nodesize = c(5, 10, 20)
+    , hyper = list(mtry = c(5, 10, 26, 50)
+                   , nodesize = c(2, 5, 10, 20, 40)
                    , ntree = c(250, 500, 1000)))
 )
 res[]
